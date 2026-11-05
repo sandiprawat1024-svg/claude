@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saree Collection</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#faf6f0;--ink:#2a1f1a;--muted:#8a7a70;--accent:#8c1d40;--gold:#b8893b;--card:#fff;--line:#eadfd2}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-tap-highlight-color:rgba(140,29,64,.15)}
+/* Playfair ke numbers default mein neeche gir jaate hain; lining-nums unhe seedha rakhta hai */
+header h1,.crumb h2,.tn b{font-family:'Playfair Display',Georgia,serif;font-variant-numeric:lining-nums;font-feature-settings:"lnum" 1}
+header{background:linear-gradient(135deg,#5e1230,#8c1d40 60%,#a8403c);color:#fff;text-align:center;padding:28px 16px 24px}
+header h1{font-size:clamp(24px,6vw,36px);letter-spacing:.5px}
+header p{margin-top:6px;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#f0d9a8}
+main{max-width:1100px;margin:0 auto;padding:16px 12px 48px}
+input[type=search],input[type=text],input[type=password],textarea,select{font-family:inherit;width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:16px;background:#fff;color:var(--ink)}
+.btn{display:inline-block;background:var(--accent);color:#fff;border:0;padding:11px 22px;border-radius:10px;font-size:15px;cursor:pointer;text-decoration:none;font-family:inherit}
+.btn.wa{background:#1fa855}
+.btn.red{background:#c0392b}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--line)}
+.btn:disabled{opacity:.6}
+.ph{position:relative;aspect-ratio:3/4;background:linear-gradient(90deg,#efe6da 25%,#f7f0e6 50%,#efe6da 75%);background-size:200% 100%;animation:sh 1.4s infinite}
+@keyframes sh{to{background-position:-200% 0}}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#2a1f1a;color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;z-index:30;max-width:90vw;text-align:center}
+
+/* customer gallery */
+.bar{background:var(--bg);padding:10px 0 12px;display:flex;flex-direction:column;gap:10px}
+@media(min-width:700px){.bar{position:sticky;top:0;z-index:5}}   /* phone par bar scroll ke saath hat jaata hai, taaki photos ko poori jagah mile */
+.crumb{display:flex;align-items:center;gap:12px}
+.crumb h2{font-size:22px;color:var(--accent)}
+.crumb button{border:1px solid var(--line);background:#fff;color:var(--ink);padding:0 16px;min-height:44px;border-radius:999px;font-size:15px;cursor:pointer;white-space:nowrap}
+.tabs{display:flex;gap:8px;justify-content:center}
+.tabs button{border:1px solid var(--line);background:#fff;color:var(--ink);padding:0 20px;min-height:44px;border-radius:999px;font-size:15px;cursor:pointer}
+.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px}
+@media(min-width:700px){.tiles{grid-template-columns:repeat(3,1fr);gap:16px}}
+@media(min-width:1000px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.tile{position:relative;aspect-ratio:4/5;border-radius:16px;overflow:hidden;cursor:pointer;box-shadow:0 2px 12px rgba(60,30,20,.12);background:#efe6da;transition:transform .15s}
+.tile:active{transform:scale(.98)}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tile.sk{animation:sh 1.4s infinite;background:linear-gradient(90deg,#efe6da 25%,#f7f0e6 50%,#efe6da 75%);background-size:200% 100%}
+.tn{position:absolute;left:0;right:0;bottom:0;padding:34px 12px 12px;background:linear-gradient(transparent,rgba(40,10,20,.88));color:#fff;text-align:center}
+.tn b{display:block;font-size:17px;letter-spacing:.3px}
+.tn small{font-size:12px;color:#f0d9a8;letter-spacing:.5px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px}
+@media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr);gap:16px}}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(4,1fr)}}
+.card{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(60,30,20,.07);cursor:pointer;transition:transform .15s}
+.card:active{transform:scale(.98)}
+.chip{flex:none;background:linear-gradient(135deg,#d4a94f,#b8893b);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;letter-spacing:.6px}
+.card{display:flex;flex-direction:column}
+.nm{flex:1;padding:10px 8px;font-size:14px;font-weight:500;text-align:center;word-break:break-word;display:flex;align-items:center;align-content:center;justify-content:center;flex-wrap:wrap;gap:4px 6px}
+.empty,#count,#msg{text-align:center;color:var(--muted);padding:20px 0;font-size:14px}
+#msg button{margin-top:12px}
+#more{text-align:center;margin-top:14px}
+.lb{position:fixed;inset:0;background:rgba(20,10,8,.92);z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:12px}
+.lb img{max-width:100%;max-height:72vh;border-radius:10px;object-fit:contain}
+.lb .cap{color:#fff;text-align:center}
+.lb .cap b{display:block;font-size:18px;word-break:break-word}
+.lb .cap small{color:#f0d9a8}
+.lb .x{position:absolute;top:4px;right:6px;color:#fff;font-size:36px;cursor:pointer;line-height:1;padding:8px 14px}
+.topbtn{position:fixed;right:14px;bottom:18px;z-index:15;width:46px;height:46px;border-radius:50%;border:0;background:var(--accent);color:#fff;font-size:22px;box-shadow:0 3px 12px rgba(0,0,0,.3);cursor:pointer}
+.lb .nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:64px;border:0;border-radius:10px;background:rgba(255,255,255,.14);color:#fff;font-size:30px;cursor:pointer}
+.lb .prev{left:8px}.lb .next{right:8px}
+
+/* admin */
+.box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.box h2{font-size:16px;margin-bottom:12px}
+.box .row{display:flex;flex-direction:column;gap:10px}
+.box .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.box small{color:var(--muted)}
+.arow{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.arow img{width:52px;height:68px;object-fit:cover;border-radius:8px;background:#efe6da}
+.ainfo{flex:1;min-width:0}
+.ainfo b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ainfo small{color:var(--muted)}
+.arow em{font-style:normal;font-size:12px;width:78px;text-align:right;color:#1a8f48}
+.arow em.out{color:#c0392b}
+.sw{position:relative;width:46px;height:26px;flex:none}
+.sw input{opacity:0;width:0;height:0}
+.sw span{position:absolute;inset:0;background:#cfc4b8;border-radius:26px;transition:.2s;cursor:pointer}
+.sw span:before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.sw input:checked+span{background:#1fa855}
+.sw input:checked+span:before{transform:translateX(20px)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1 id="brand"></h1>
+  <p>Wholesale Saree Collection</p>
+</header>
+
+<main id="gallery" hidden>
+  <div class="bar">
+    <div class="crumb" id="crumb" hidden>
+      <button id="backBtn">&larr; Sab category</button>
+      <h2 id="catTitle"></h2>
+    </div>
+    <div class="tabs" id="tabs" hidden>
+      <button data-t="All" class="on">Sab</button>
+      <button data-t="Regular">Regular</button>
+      <button data-t="Premium">Premium</button>
+    </div>
+    <input id="search" type="search" placeholder="Saree ya design code khojein...">
+  </div>
+  <div id="tiles" class="tiles"></div>
+  <div id="grid" class="grid" hidden></div>
+  <p id="count" hidden></p>
+  <div id="more" hidden><button class="btn ghost" id="moreBtn">Aur dikhayein</button></div>
+  <div id="msg" hidden></div>
+</main>
+
+<div id="lb" class="lb" hidden>
+  <span class="x" id="lbX">&times;</span>
+  <button class="nav prev" id="lbPrev" aria-label="Pichli">&lsaquo;</button>
+  <img id="lbImg" alt="">
+  <button class="nav next" id="lbNext" aria-label="Agli">&rsaquo;</button>
+  <div class="cap"><b id="lbName"></b><small id="lbType"></small></div>
+  <a id="lbWa" class="btn wa" target="_blank" rel="noopener" hidden>Is saree ke baare mein poochhein</a>
+</div>
+<button id="topBtn" class="topbtn" hidden aria-label="Upar jaayein">&uarr;</button>
+
+<div id="toast" hidden></div>
+<div id="err" hidden style="position:fixed;bottom:0;left:0;right:0;background:#c0392b;color:#fff;padding:10px 14px;font-size:13px;z-index:50;font-family:monospace"></div>
+<script>
+window.addEventListener('error', function (e) {
+  if (e.target && e.target.tagName) return;   // photo load error, ignore
+  var d = document.getElementById('err');
+  if (d) { d.hidden = false; d.textContent = 'Error: ' + e.message + ' (line ' + e.lineno + ')'; }
+});
+</script>
+<script>
+/* ---- SETTINGS: sirf yeh 3 line badlo ---- */
+const API_URL = 'YAHAN_APPS_SCRIPT_KA_EXEC_LINK_PASTE_KARO';   // jaise https://script.google.com/macros/s/.../exec
+const BRAND = 'Aapki Company ka Naam';
+const WHATSAPP = '';   // optional: '919XXXXXXXXX'. Khaali = enquiry button nahi dikhega
+/* ----------------------------------------- */
+document.getElementById('brand').textContent = BRAND;
+function loadData() {
+  if (!API_URL || API_URL.indexOf('script.google.com') < 0) return Promise.reject(new Error('setup'));
+  return fetch(API_URL + (API_URL.indexOf('?') > -1 ? '&' : '?') + 'api=catalog')
+    .then(function (r) { return r.json(); })
+    .then(function (d) { if (!d || !d.ok) throw new Error('api'); return d; });
+}
+</script>
+<script>
+(function () {
+if (document.body.getAttribute('data-admin') === 'yes') return;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const thumb = (id, w) => 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w' + w;
+const pretty = s => String(s).toLowerCase().replace(/(^|[\s\-\/])([a-z])/g, (m, a, b) => a + b.toUpperCase());
+const CACHE_KEY = 'saree_catalog_v2', PAGE = 40;
+
+let cats = [], items = [], count = [], cover = [];
+let ci = -1, tab = 'All', q = '', shown = PAGE, list = [], loaded = false, lbIdx = -1;
+
+$('gallery').hidden = false;
+
+function setData(d) {
+  cats = d.cats || [];
+  items = (d.items || []).map(a => ({ id: a[0], name: a[1], type: a[2] ? 'Premium' : 'Regular', ci: a[3] }));
+  count = cats.map(() => 0);
+  cover = cats.map(() => '');
+  items.forEach(i => { count[i.ci]++; if (!cover[i.ci]) cover[i.ci] = i.id; });
+}
+function msg(t) { $('msg').textContent = t || ''; $('msg').hidden = !t; }
+
+function tile(c, k) {
+  return '<div class="tile" data-ci="' + k + '"><img loading="lazy" src="' + thumb(cover[k], 400) + '" alt="">' +
+    '<div class="tn"><b>' + esc(pretty(c)) + '</b><small>' + count[k] + ' designs</small></div></div>';
+}
+function card(i, k) {
+  return '<div class="card" data-i="' + k + '"><div class="ph"><img loading="lazy" src="' + thumb(i.id, 500) + '" alt="' + esc(i.name) + '"></div>' +
+    '<div class="nm">' + (i.type === 'Premium' ? '<span class="chip">PREMIUM</span>' : '') + '<span>' + esc(i.name) + '</span></div></div>';
+}
+
+function render() {
+  const home = ci === -1 && !q;
+  $('crumb').hidden = ci === -1;
+  $('tabs').hidden = home;
+  $('tiles').hidden = !home;
+  $('grid').hidden = home;
+  $('count').hidden = home;
+  $('more').hidden = true;
+  if (ci !== -1) $('catTitle').textContent = pretty(cats[ci] || '');
+  if (home) {
+    $('tiles').innerHTML = cats.map(tile).join('');
+    msg(loaded && !cats.length ? 'Abhi koi saree stock mein nahi hai.' : '');
+    return;
+  }
+  list = items.filter(i => (ci === -1 || i.ci === ci) && (tab === 'All' || i.type === tab) && (!q || i.name.toLowerCase().includes(q)));
+  drawGrid();
+}
+function drawGrid() {
+  $('grid').innerHTML = list.slice(0, shown).map(card).join('');
+  $('more').hidden = shown >= list.length;
+  $('count').textContent = list.length ? list.length + ' designs' : '';
+  msg(list.length ? '' : 'Is filter mein abhi koi saree stock mein nahi hai.');
+  setTimeout(maybeMore, 0);
+}
+function maybeMore() {
+  if ($('grid').hidden || shown >= list.length) return;
+  const de = document.documentElement;
+  if (de.scrollHeight - (window.scrollY + window.innerHeight) < 900) { shown += PAGE; drawGrid(); }
+}
+window.addEventListener('scroll', () => { $('topBtn').hidden = window.scrollY < 700; }, { passive: true });
+$('topBtn').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+window.addEventListener('scroll', maybeMore, { passive: true });
+window.addEventListener('resize', maybeMore);
+$('moreBtn').onclick = () => { shown += PAGE; drawGrid(); };
+
+function go(k, push) {
+  ci = k; tab = 'All'; q = ''; shown = PAGE;
+  $('search').value = '';
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === 'All'));
+  render();
+  window.scrollTo(0, 0);
+  if (push) { try { history.pushState({ ci: k }, ''); } catch (e) {} }
+}
+window.addEventListener('popstate', e => go(e.state && typeof e.state.ci === 'number' ? e.state.ci : -1, false));
+$('backBtn').onclick = () => {
+  let st = null; try { st = history.state; } catch (e) {}
+  if (st && typeof st.ci === 'number') history.back(); else go(-1, false);
+};
+$('tiles').onclick = e => { const t = e.target.closest('.tile'); if (t && t.dataset.ci !== undefined) go(Number(t.dataset.ci), true); };
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.tabs button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on'); tab = b.dataset.t; shown = PAGE; render();
+});
+$('search').oninput = e => { q = e.target.value.trim().toLowerCase(); shown = PAGE; render(); };
+
+/* ---- badi photo (lightbox) ---- */
+function openLb(k) {
+  const i = list[k]; if (!i) return;
+  lbIdx = k;
+  $('lbImg').src = thumb(i.id, 1400);
+  $('lbName').textContent = i.name;
+  $('lbType').textContent = pretty(cats[i.ci] || '') + ' · ' + i.type;
+  $('lbPrev').hidden = k <= 0;
+  $('lbNext').hidden = k >= list.length - 1;
+  if (WHATSAPP) {
+    $('lbWa').hidden = false;
+    $('lbWa').href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent('Mujhe is saree ke baare mein jaankari chahiye: ' + i.name);
+  }
+  $('lb').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+function closeLb() { $('lb').hidden = true; document.body.style.overflow = ''; }
+function step(d) { const n = lbIdx + d; if (n >= 0 && n < list.length) openLb(n); }
+$('grid').onclick = e => { const c = e.target.closest('.card'); if (c) openLb(Number(c.dataset.i)); };
+$('lbX').onclick = closeLb;
+$('lbPrev').onclick = () => step(-1);
+$('lbNext').onclick = () => step(1);
+$('lb').onclick = e => { if (e.target === $('lb')) closeLb(); };
+document.addEventListener('keydown', e => {
+  if ($('lb').hidden) return;
+  if (e.key === 'Escape') closeLb(); else if (e.key === 'ArrowLeft') step(-1); else if (e.key === 'ArrowRight') step(1);
+});
+let sx = 0;
+$('lb').addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+$('lb').addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1); }, { passive: true });
+
+/* photo na khule to ek baar dobara koshish */
+document.addEventListener('error', e => {
+  const t = e.target;
+  if (t && t.tagName === 'IMG' && !t.dataset.r) {
+    t.dataset.r = '1';
+    setTimeout(() => { t.src = t.src + '&r=' + Date.now(); }, 1500);
+  }
+}, true);
+
+/* ---- data laao ---- */
+function showError(err) {
+  $('tiles').innerHTML = ''; $('grid').innerHTML = '';
+  $('msg').hidden = false;
+  if (err && err.message === 'setup') { $('msg').textContent = 'Setup baaki hai: API_URL mein Apps Script ka /exec link daalo.'; return; }
+  $('msg').innerHTML = 'Catalog load nahi ho paya.<br><button class="btn" id="retry">Dobara koshish karein</button>';
+  $('retry').onclick = load;
+}
+function load() {
+  try {
+    const c = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+    if (c && c.cats && c.items && c.items.length) { setData(c); loaded = true; render(); }
+    else { $('tiles').innerHTML = '<div class="tile sk"></div>'.repeat(6); }
+  } catch (e) { $('tiles').innerHTML = '<div class="tile sk"></div>'.repeat(6); }
+  loadData().then(d => {
+    if (!d || !d.cats || !d.items) throw new Error('api');
+    setData(d); loaded = true;
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ cats: d.cats, items: d.items })); } catch (e) {}
+    if (ci >= cats.length) ci = -1;
+    render();
+  }).catch(err => { if (!items.length) showError(err); });
+}
+load();
+})();
+</script>
+</body>
+</html>
